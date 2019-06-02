@@ -7,7 +7,7 @@ import pytest
 import pandas.util._test_decorators as td
 
 import pandas as pd
-from pandas import MultiIndex, Series, date_range
+from pandas import MultiIndex, Series, date_range, CategoricalDtype
 import pandas.util.testing as tm
 from pandas.util.testing import assert_almost_equal, assert_series_equal
 
@@ -252,3 +252,13 @@ class TestSeries(Generic):
         # GH22397
         s = pd.Series(range(5), index=pd.date_range("2017", periods=5))
         assert s.shift(freq=move_by_freq) is not s
+
+    def test_update_categorical_series(self):
+        # GH25744
+        cats = CategoricalDtype(['a', 'b', 'c', 'd'])
+        s1 = Series(['a', 'b', 'c'], index=[1, 2, 3], dtype=cats)
+        s2 = Series(['b', 'a'], index=[1, 2], dtype=cats)
+        s1.update(s2)
+        expected = Series(['b', 'a', 'c'], index=[1, 2, 3], dtype=cats)
+
+        assert_series_equal(expected, s1)
