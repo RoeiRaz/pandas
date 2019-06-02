@@ -1586,7 +1586,8 @@ class NonConsolidatableMixIn:
         new_values = self.values if inplace else self.copy().values
         new_values, new = self._try_coerce_args(new_values, new)
 
-        if isinstance(new, np.ndarray) and len(new) == len(mask):
+        from pandas.core.generic import NDFrame
+        if isinstance(new, (np.ndarray, NDFrame)) and len(new) == len(mask):
             new = new[mask]
 
         mask = _safe_reshape(mask, new_values.shape)
